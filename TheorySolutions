@@ -1,0 +1,24 @@
+
+
+PART 1 THEORY: 
+
+
+
+m) How can we achieve this (2 methods) ? Write the steps to these 2 methods in a text file.
+
+By moving script to a directory in PATH which is an environment variable 
+OR
+By adding the current directory to PATH 
+
+
+n) We would like this change to be permanent, how can we do this?
+
+By exporting 
+export PATH
+and then adding it to shell configuration file (bashrc)
+
+o) We just made this change permanent, but we don’t want to wait until another terminal is
+opened, we would like to make this change NOW, and in this terminal. What could we do?
+
+Use source instead of executing using ./
+This way we don't open a subprocess, and the execution happens in our current environment, maintaining state and variables and not resorting to opening new terminal

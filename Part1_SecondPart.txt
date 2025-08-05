@@ -1,0 +1,11 @@
+You'll find the commands screenshot in the PDF.
+They contain the solutions for this part:
+After running this script, do the following:
+(each point in this question must be solved in one command, write these commands in a text file
+that will be delivered with the 2 scripts)
+g) Switch to the newly created user
+h) Display all the files inside the extracted folder recursively and with long listing format
+i) Change to owner of this directory recursively to be the new user
+j) Again, display all the files inside the extracted folder recursively and with long listing format
+k) Search for the word “file” in the extracted directory recursively
+l) Remove all the files ending with “.c”

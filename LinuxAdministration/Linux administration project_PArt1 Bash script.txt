@@ -1,0 +1,159 @@
+Linux administration project: 
+
+Part 1: 
+A) 
+
+#!/bin/bash
+
+#check that the user entered the full arguments
+
+if [ -n "$1" ] && [ -n "$2" ] && [ -n "$3" ]; then
+        username=$1
+        password=$2
+        group=$3
+else
+        echo "Missing Arguments"
+        exit 1
+fi
+
+#check that user has typed sudo before executing file
+
+if [ $EUID -ne 0 ]; then
+        echo "This command requires Sudo Permissions"
+        exit 1
+fi
+
+#print arguments
+echo "Username: $username, Password: $password, Group Name: $group"
+
+#Create user
+useradd -m -s /bin/bash -N "$username"
+
+#Set user password
+echo "$username:$password" | chpasswd
+
+#Print user info before group setting
+
+echo "First time running id command, only user created with default ID, no groups"
+id "$username"
+
+#Add group and id
+groupadd -g 200 "$group"
+
+#Add user to group
+usermod -aG "$group" "$username"
+
+#Print user info after group setting
+
+echo "Second time running id command, user still default ID, added to the newly created group"
+id "$username"
+
+# modify user to have new ID and this group as its primary
+
+usermod -u 1600 -g "$group" "$username"
+
+#Print user info after new group set as primary and ID changed
+
+echo "Last time running id command, user new ID and new primary group"
+id "$username"
+
+
+
+
+B) 
+
+#!/bin/bash
+
+if [ -f "files.tar" ]; then
+    echo "Removing existing files.tar"
+    sudo rm files.tar
+fi
+
+if [ -f "files.tar.gz" ]; then
+    echo "Removing existing files.tar.gz"
+    sudo rm files.tar.gz
+fi
+
+if [ -d "$1" ]; then
+        echo "Directory exists, removing it and creating a new one with same name"
+        sudo rm -rf "$1"
+fi
+
+
+mkdir -p "$1"
+touch "$1"/main.c "$1"/main.h "$1"/hello.c "$1"/hello.h
+
+
+for file in "$1"/main.c "$1"/main.h "$1"/hello.c "$1"/hello.h; do
+    sudo chown Joe:Joe "$file"
+done
+
+for file in  "$1"/main.c "$1"/main.h "$1"/hello.c "$1"/hello.h; do
+        filename=$(basename "$file")
+        echo "This file is named $filename" > "$file"
+done
+
+tar -cvf files.tar "$1" && gzip files.tar
+
+
+#Joe cant cd to Home of New user, thus we add Joe to the primary group of the new user
+sudo usermod -aG GroupForYoussef Joe
+
+#some fixes that need to be done as errors were occuring due to access permissions
+sudo chown Youssef:GroupForYoussef /home/Youssef
+sudo chmod 770 /home/Youssef
+
+#Now home is surely owned by Youssef and the GroupForYoussef has all access on it
+
+cp files.tar.gz /home/Youssef && \
+
+cd /home/Youssef && \
+
+gunzip files.tar.gz && tar -xvf files.tar
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PART 1 THEORY: 
+
+
+
+m) How can we achieve this (2 methods) ? Write the steps to these 2 methods in a text file.
+
+By moving script to a directory in PATH which is an environment variable 
+OR
+By adding the current directory to PATH 
+
+
+n) We would like this change to be permanent, how can we do this?
+
+By exporting 
+export PATH
+and then adding it to shell configuration file (bashrc)
+
+o) We just made this change permanent, but we don’t want to wait until another terminal is
+opened, we would like to make this change NOW, and in this terminal. What could we do?
+
+Use source instead of executing using ./
+This way we don't open a subprocess, and the execution happens in our current environment, maintaining state and variables and not resorting to opening new terminal

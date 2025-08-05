@@ -1,0 +1,67 @@
+CMAKE (PART 2. B)
+
+Root CMake:
+cmake_minimum_required(VERSION 3.10)
+project(CipherApp C)
+
+#output directories
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out/libs)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out/libs)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out)
+
+#modules
+add_subdirectory(Modules/caesar_cipher)
+add_subdirectory(Modules/xor_cipher)
+add_subdirectory(Application)
+
+
+
+Application CMake: 
+add_executable(output app.c)
+
+target_include_directories(output PRIVATE
+    ${PROJECT_SOURCE_DIR}/Modules/caesar_cipher/inc
+    ${PROJECT_SOURCE_DIR}/Modules/xor_cipher/inc
+)
+
+target_link_libraries(output
+    caesar_cipher
+    xor_cipher
+)
+
+set_target_properties(output PROPERTIES
+    BUILD_RPATH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+)
+
+
+
+
+
+caesar_cipher CMake: 
+
+add_library(caesar_cipher STATIC
+    src/caesar_encrypt.c
+    src/caesar_decrypt.c
+)
+
+target_include_directories(caesar_cipher PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
+
+
+
+
+
+xor_cipher CMake: 
+
+add_library(xor_cipher SHARED
+    src/xor_encrypt.c
+    src/xor_decrypt.c
+)
+
+target_include_directories(xor_cipher PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
+
+
+
+
+
+
+
